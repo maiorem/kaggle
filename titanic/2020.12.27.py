@@ -26,7 +26,7 @@ print(train_x)
 from xgboost import XGBClassifier
 
 train_x=train_x.to_numpy().astype('float32')
-train_y=train_y.to_numpy().astype('float32')
+train_y=train_y.to_numpy()
 test_x=test_x.to_numpy().astype('float32')
 
 train_y=train_y.reshape(891,)
@@ -62,14 +62,25 @@ search=RandomizedSearchCV(XGBClassifier(), parameters, cv=kfold)
 
 search.fit(train_x, train_y) 
 
-model=XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=0.7,
-              colsample_bynode=1, colsample_bytree=0.6, gamma=0, gpu_id=-1,
+model=XGBClassifier(base_score=0.5, booster='gbtree', colsample_bylevel=1,
+              colsample_bynode=1, colsample_bytree=0.9, gamma=0, gpu_id=-1,
               importance_type='gain', interaction_constraints='',
-              learning_rate=0.1, max_delta_step=0, max_depth=6,
+              learning_rate=0.01, max_delta_step=0, max_depth=6,
               min_child_weight=1, monotone_constraints='()',
-              n_estimators=110, n_jobs=0, num_parallel_tree=1, random_state=0,
+              n_estimators=200, n_jobs=0, num_parallel_tree=1, random_state=0,
               reg_alpha=0, reg_lambda=1, scale_pos_weight=1, subsample=1,
               tree_method='exact', validate_parameters=1, verbosity=None)
+
+
+##### 3. 컴파일, 훈련
+model.fit(train_x, train_y)
+
+
+##### 4. 예측
+predict=model.predict(test_x)
+
+predict = (predict > 0.5).astype('int').ravel()
+print('predict :', predict)
 
 
 ##### 3. 컴파일, 훈련
